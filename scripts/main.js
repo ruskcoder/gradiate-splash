@@ -20,11 +20,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const userAgent = navigator.userAgent || navigator.vendor || window.opera;
   const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
 
-  const link = document.getElementById("gradexis-link");
+  const link = document.getElementById("gradiate-link");
   if (/android/i.test(userAgent)) {
-    link.href = "https://play.google.com/store/apps/details?id=com.ruskcoder.gradexis";
+    link.href = "https://play.google.com/store/apps/details?id=com.ruskcoder.gradiate";
   } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-    link.href = "https://apps.apple.com/us/app/gradexis/id6745531312";
+    link.href = "https://apps.apple.com/us/app/gradiate/id6745531312";
   }
 
   const desktopButtons = document.querySelector(".install__buttons--desktop");

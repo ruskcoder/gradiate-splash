@@ -953,7 +953,7 @@ nav>div {
   padding-bottom: 1.5rem;
 }
 
-.gradexis {
+.gradiate {
   background-color: color-mix(in srgb, var(--theme) 30%, transparent);
   backdrop-filter: blur(0px);
   border-radius: 20px;
