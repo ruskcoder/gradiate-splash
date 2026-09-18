@@ -1,0 +1,207 @@
+/* ============================================
+   USER STATS SECTION
+   ============================================ */
+
+.stats[hidden] {
+  display: none;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 var(--spacing-3xl);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-3xl) var(--spacing-md) !important;
+}
+
+.stats__counter {
+  grid-column: 2;
+  grid-row: 1;
+  text-align: center;
+}
+
+.stats__number {
+  font-family: var(--font-family-serif);
+  font-size: 4.5rem;
+  line-height: 1;
+  color: var(--theme-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats__label {
+  margin-top: var(--spacing-sm);
+  max-width: 12rem;
+  font-size: var(--font-size-lg);
+  color: var(--text-color-secondary);
+}
+
+.stats-chart {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.stats-chart__heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--spacing-md);
+}
+
+.stats-chart__row {
+  display: grid;
+  grid-template-columns: minmax(0, 14rem) 1fr auto;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 0.35rem 0;
+}
+
+.stats-chart__label {
+  font-size: var(--font-size-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-chart__track {
+  height: 1.25rem;
+  background: var(--component-bg-tertiary);
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+}
+
+.stats-chart__bar {
+  height: 100%;
+  width: 0;
+  background: var(--theme-secondary);
+  border-radius: var(--border-radius-full);
+  transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.stats--visible .stats-chart__bar {
+  width: var(--w);
+}
+
+.stats-chart__value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  min-width: 6.5rem;
+  text-align: right;
+}
+
+.stats-chart__value small {
+  font-weight: var(--font-weight-normal);
+  color: var(--text-color-tertiary);
+}
+
+/* "Other" row: a button that expands the full list */
+.stats-chart__other-toggle {
+  width: 100%;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.stats-chart__other-toggle .stats-chart__label::after {
+  content: " ▸";
+  display: inline-block;
+  color: var(--text-color-tertiary);
+  transition: transform var(--transition-slower);
+}
+
+.stats-chart__other-toggle[aria-expanded="true"] .stats-chart__label::after {
+  transform: rotate(90deg);
+}
+
+.stats-chart__other-panel {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s;
+}
+
+.stats-chart__other-panel--open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.stats-chart__other-list {
+  min-height: 0;
+  overflow: hidden;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.stats-chart__other-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: 0.2rem 0;
+}
+
+.stats-chart__other-list li:first-child {
+  padding-top: var(--spacing-sm);
+}
+
+.stats-chart__other-list li:last-child {
+  padding-bottom: var(--spacing-sm);
+}
+
+/* Same side-by-side layout on small screens, just tighter */
+@media (max-width: 768px) {
+  .stats {
+    gap: 0 var(--spacing-md);
+  }
+
+  .stats__number {
+    font-size: 2.25rem;
+  }
+
+  .stats__label {
+    max-width: 6.5rem;
+    font-size: var(--font-size-xs);
+  }
+
+  .stats-chart__heading {
+    font-size: var(--font-size-base);
+  }
+
+  .stats-chart__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.15rem var(--spacing-sm);
+  }
+
+  .stats-chart__track {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    height: 0.75rem;
+  }
+
+  .stats-chart__label,
+  .stats-chart__value {
+    font-size: var(--font-size-xs);
+  }
+
+  .stats-chart__value {
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-chart__bar,
+  .stats-chart__other-panel,
+  .stats-chart__other-toggle .stats-chart__label::after {
+    transition: none;
+  }
+}

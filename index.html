@@ -20,8 +20,10 @@
   <link rel="stylesheet" href="styles/install.css" />
   <link rel="stylesheet" href="styles/footer.css" />
   <link rel="stylesheet" href="styles/privacy-policy.css" />
+  <link rel="stylesheet" href="styles/stats.css" />
   <!-- External Libraries -->
   <script src="scripts/main.js"></script>
+  <script src="scripts/stats.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
   <link rel="shortcut icon" href="images/logo-rounded.png" type="image/x-icon" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -84,6 +86,20 @@
         <h1 class="platform-card__title">Mobile App:</h1>
         <img src="../images/screenshots/md/grades.png" alt="Gradiate app screenshot" class="platform-card__image" />
       </div>
+    </div>
+
+    <!-- Live user stats -->
+    <div class="section stats" id="stats">
+      <div class="stats__counter">
+        <div class="stats__number" id="user-count" aria-live="polite">0</div>
+        <p class="stats__label">students across <span id="school-count">0</span> schools use Gradiate</p>
+      </div>
+      <div class="stats-chart">
+        <h3 class="stats-chart__heading">Users by school</h3>
+        <div id="school-chart"></div>
+      </div>
+      <!-- Outside the chart so expanding it doesn't re-center the number -->
+      <div class="stats-chart__other-panel" id="school-other"></div>
     </div>
 
     <div class="section section--light-bg safe-secure">

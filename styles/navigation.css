@@ -103,6 +103,22 @@
   height: 1.5rem;
 }
 
+@media (max-width: 550px) {
+  .nav-buttons {
+    gap: var(--spacing-xs);
+  }
+
+  .nav-button {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .nav-button svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
 .nav-button:hover {
   background-color: var(--color-surface-tertiary);
 }
