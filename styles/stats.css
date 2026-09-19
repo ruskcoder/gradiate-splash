@@ -40,7 +40,7 @@
 .stats-chart {
   grid-column: 1;
   grid-row: 1;
-  min-width: 0;
+  min-width: min(20rem, 100%);
 }
 
 .stats-chart__heading {
@@ -195,6 +195,38 @@
 
   .stats-chart__value {
     min-width: 0;
+  }
+}
+
+/* Below this the chart would drop under its 20rem minimum beside the number,
+   so stack: number on top, chart full width underneath. */
+@media (max-width: 500px) {
+  .stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-lg) 0;
+  }
+
+  .stats__counter {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .stats__number {
+    font-size: 3.25rem;
+  }
+
+  .stats__label {
+    max-width: none;
+    font-size: var(--font-size-sm);
+  }
+
+  .stats-chart {
+    grid-row: 2;
+  }
+
+  .stats-chart__other-panel {
+    grid-row: 3;
+    margin-top: calc(-1 * var(--spacing-lg));
   }
 }
 
