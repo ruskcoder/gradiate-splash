@@ -21,7 +21,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
 
   const link = document.getElementById("gradiate-link");
-  if (/android/i.test(userAgent)) {
+  if (!link) {
+    // Not the home page: no install link to rewrite.
+  } else if (/android/i.test(userAgent)) {
     link.href = "https://play.google.com/store/apps/details?id=com.ruskcoder.gradiate";
   } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
     link.href = "https://apps.apple.com/us/app/gradiate/id6745531312";
@@ -30,7 +32,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const desktopButtons = document.querySelector(".install__buttons--desktop");
   const mobileButtons = document.querySelector(".install__buttons--mobile");
 
-  if (isMobile) {
+  if (!desktopButtons || !mobileButtons) {
+    // Not the home page.
+  } else if (isMobile) {
     desktopButtons.style.display = "none";
     mobileButtons.style.display = "flex";
   } else {
@@ -169,6 +173,8 @@ document.addEventListener("DOMContentLoaded", function () {
       updateSwiperScales(swiper, false);
     });
   }
+
+  if (typeof Swiper === 'undefined') return;
 
   var swiperApp = new Swiper('[data-carousel="app"]', {
     slidesPerView: 1,
