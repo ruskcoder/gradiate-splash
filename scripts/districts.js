@@ -100,29 +100,58 @@ function initDistrictList(districts) {
       ...(d.counties || []).flatMap((c) => [c, parseCounty(c, d.state).state])].join(' ').toLowerCase());
   const empty = document.getElementById('district-empty');
 
+  // Every state a district touches, including out-of-state counties ("Philadelphia County, PA").
+  const statesOf = districts.map((d) =>
+    new Set([d.state, ...(d.counties || []).map((c) => parseCounty(c, d.state).state)].filter(Boolean)));
+  const stateFilter = document.getElementById('state-filter');
+  let activeState = '';
+
   document.getElementById('district-count').textContent = districts.length.toLocaleString();
 
   const filter = () => {
     const terms = search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
     let shown = 0;
     items.forEach((item, i) => {
-      const match = terms.every((t) => haystacks[i].includes(t));
+      const match = (!activeState || statesOf[i].has(activeState)) && terms.every((t) => haystacks[i].includes(t));
       item.hidden = !match;
       if (match) shown++;
     });
     empty.hidden = shown > 0;
-    results.textContent = terms.length
+    results.textContent = terms.length || activeState
       ? `${shown.toLocaleString()} of ${districts.length.toLocaleString()}`
       : `${districts.length.toLocaleString()} districts`;
   };
 
+  const selectState = (state) => {
+    activeState = state;
+    stateFilter.querySelectorAll('.state-chip').forEach((chip) =>
+      chip.setAttribute('aria-pressed', String(chip.dataset.state === state)));
+    filter();
+  };
+
+  // One chip per state, busiest first, after an "All" chip.
+  const stateCounts = new Map();
+  statesOf.forEach((states) => states.forEach((s) => stateCounts.set(s, (stateCounts.get(s) || 0) + 1)));
+  const chip = (state, label, count) =>
+    `<button type="button" class="state-chip" data-state="${escapeHtml(state)}" aria-pressed="false">` +
+    `${escapeHtml(label)} <span class="state-chip__count">${count.toLocaleString()}</span></button>`;
+  stateFilter.innerHTML = stateCounts.size
+    ? chip('', 'All', districts.length) +
+      [...stateCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([s, n]) => chip(s, s, n)).join('')
+    : '';
+  stateFilter.addEventListener('click', (e) => {
+    const target = e.target.closest('.state-chip');
+    // Clicking the active state again goes back to all.
+    if (target) selectState(target.dataset.state === activeState ? '' : target.dataset.state);
+  });
+
   search.addEventListener('input', filter);
-  filter();
+  selectState('');
 
   // Lets the map narrow the list to one county.
-  return (query) => {
-    search.value = query;
-    filter();
+  return (county, state) => {
+    search.value = county;
+    selectState(state);
     search.closest('.districts-list').scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 }
@@ -235,7 +264,7 @@ async function initMap(districts, focusList) {
     const el = countyAt(e.target);
     if (!el) return;
     const { t } = counties[el.dataset.i];
-    focusList(`${t.county} ${t.state}`);
+    focusList(t.county, t.state);
   });
 }
 

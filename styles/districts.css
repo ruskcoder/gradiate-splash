@@ -266,6 +266,49 @@ html.dark .districts-map {
   white-space: nowrap;
 }
 
+.state-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin: calc(-1 * var(--spacing-sm)) 0 var(--spacing-lg);
+}
+
+.state-filter:empty {
+  display: none;
+}
+
+.state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: 2px solid var(--theme-primary);
+  border-radius: var(--border-radius-full);
+  background: transparent;
+  color: var(--text-color);
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.state-chip:hover {
+  background: var(--component-bg-secondary);
+}
+
+.state-chip[aria-pressed="true"] {
+  background: var(--theme-secondary);
+  border-color: var(--theme-secondary);
+  color: var(--color-white);
+}
+
+.state-chip__count {
+  font-weight: var(--font-weight-normal);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
 .districts-list__grid {
   list-style: none;
   display: grid;
