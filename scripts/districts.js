@@ -1,11 +1,13 @@
 /* ============================================
    DISTRICTS PAGE
-   Lists every supported district from districts.json and shades
-   a US county map by how many districts serve each county.
+   Lists every supported district from districts.json and shades a US county
+   map by how many districts (or Gradiate users) are in each county.
    ============================================ */
 
 // Served from this site; the web and mobile apps fetch this same file.
 const DISTRICTS_URL = 'districts.json';
+// Users per district, for the map's Users view.
+const USERS_URL = 'district-users.json';
 // Pre-projected (Albers USA, 975x610) county + state shapes, so no projection library is needed.
 const COUNTIES_URL = 'https://cdn.jsdelivr.net/npm/us-atlas@3/counties-albers-10m.json';
 
@@ -17,9 +19,6 @@ const PLATFORM_NAMES = {
 
 // loginType looks like "credentials/classlink:katyisd"; everything but plain credentials is SSO.
 const SSO_NAMES = { classlink: 'ClassLink', microsoft: 'Microsoft', google: 'Google', clever: 'Clever' };
-
-// Lower bound of each map shade; keep in sync with the --map-* colors in districts.css.
-const MAP_BUCKETS = [1, 2, 3, 5, 10];
 
 // A county entry is "Harris County", or "Philadelphia County, PA" when it's outside the district's state.
 const STATE_ABBR = {
@@ -158,6 +157,21 @@ function initDistrictList(districts) {
 
 /* ---------- Map ---------- */
 
+// Each view shades counties by a different number. `buckets` are the lower bound of each
+// shade; keep five so they line up with the --map-* colors in districts.css.
+const MAP_VIEWS = {
+  districts: {
+    buckets: [1, 2, 3, 5, 10],
+    legend: 'Districts per county',
+    unit: ['district', 'districts'],
+  },
+  users: {
+    buckets: [1, 3, 10, 100, 1000],
+    legend: 'Users per county',
+    unit: ['user', 'users'],
+  },
+};
+
 /** Planar (already projected) coordinates -> SVG path data. */
 const line = (points) => 'M' + points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join('L');
 
@@ -167,44 +181,63 @@ function polygonPath(geometry) {
   return polygons.flatMap((rings) => rings.map((ring) => line(ring) + 'Z')).join('');
 }
 
-function bucketOf(count) {
+function bucketOf(count, buckets) {
   let b = 0;
-  MAP_BUCKETS.forEach((min, i) => { if (count >= min) b = i + 1; });
+  buckets.forEach((min, i) => { if (count >= min) b = i + 1; });
   return b;
 }
 
-/** "texas|harris" -> { count, label } for every county some district serves. */
-function tallyCounties(districts) {
+const plural = (n, [one, many]) => `${n.toLocaleString()} ${n === 1 ? one : many}`;
+
+/**
+ * "texas|harris" -> { count, county, state, districts } for every county with a nonzero value.
+ * `weight(d)` is what each district adds to the counties it serves (1 per district, or its users).
+ * A district spanning several counties counts fully in each of them.
+ */
+function tallyCounties(districts, weight) {
   const tally = new Map();
   for (const d of districts) {
+    const w = weight(d);
+    if (!w) continue;
     for (const entry of d.counties || []) {
       const { county, state } = parseCounty(entry, d.state);
       const key = countyKey(county, state);
-      const t = tally.get(key) || { count: 0, county, state };
-      t.count++;
+      const t = tally.get(key) || { count: 0, county, state, districts: [] };
+      t.count += w;
+      t.districts.push(d.name);
       tally.set(key, t);
     }
   }
   return tally;
 }
 
-function renderLegend() {
-  const labels = MAP_BUCKETS.map((min, i) => {
-    const next = MAP_BUCKETS[i + 1];
-    return next === undefined ? `${min}+` : next - 1 === min ? `${min}` : `${min}–${next - 1}`;
+function renderLegend(view) {
+  const { buckets, legend } = MAP_VIEWS[view];
+  const labels = buckets.map((min, i) => {
+    const next = buckets[i + 1];
+    if (next === undefined) return `${min.toLocaleString()}+`;
+    return next - 1 === min ? `${min}` : `${min.toLocaleString()}–${(next - 1).toLocaleString()}`;
   });
   document.getElementById('map-legend').innerHTML =
-    '<span class="districts-map__legend-title">Districts per county</span>' +
+    `<span class="districts-map__legend-title">${legend}</span>` +
     labels.map((l, i) => `<span class="districts-map__legend-item"><i class="districts-map__swatch" data-bucket="${i + 1}"></i>${l}</span>`).join('');
 }
 
-async function initMap(districts, focusList) {
+async function initMap(districts, userData, focusList) {
   const section = document.querySelector('.districts-map');
   const svg = document.getElementById('districts-map');
   const tooltip = document.getElementById('map-tooltip');
+  const summary = document.getElementById('map-summary');
+  const tabs = [...section.querySelectorAll('.map-tab')];
   if (typeof topojson === 'undefined') return;
 
-  const tally = tallyCounties(districts);
+  const usersByDistrict = new Map((userData?.districts || []).map((u) => [u.district, u.users]));
+  // A district can be listed twice (e.g. separate HAC and ClassLink entries); count it once.
+  const unique = [...new Map(districts.map((d) => [d.name, d])).values()];
+  const tallies = {
+    districts: tallyCounties(unique, () => 1),
+    users: tallyCounties(unique, (d) => usersByDistrict.get(d.name) || 0),
+  };
 
   let us;
   try {
@@ -215,33 +248,52 @@ async function initMap(districts, focusList) {
   }
 
   const stateNames = new Map(us.objects.states.geometries.map((g) => [g.id, g.properties.name]));
-  const states = topojson.feature(us, us.objects.states).features;
-  const stateBorders = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
+  const statePaths = topojson.feature(us, us.objects.states).features
+    .map((s) => `<path class="districts-map__state" d="${polygonPath(s.geometry)}" />`).join('');
+  const borders = topojson.mesh(us, us.objects.states, (a, b) => a !== b);
+  const bordersPath = `<path class="districts-map__borders" d="${borders.coordinates.map(line).join('')}" />`;
+  const allCounties = topojson.feature(us, us.objects.counties).features
+    .map((f) => ({ f, key: countyKey(f.properties.name, stateNames.get(f.id.slice(0, 2))) }));
 
   // No location data yet (older districts.json): show plain gray states with the "coming soon" note.
-  if (!tally.size) {
-    svg.innerHTML =
-      states.map((s) => `<path class="districts-map__state" d="${polygonPath(s.geometry)}" />`).join('') +
-      `<path class="districts-map__borders" d="${stateBorders.coordinates.map(line).join('')}" />`;
+  if (!tallies.districts.size) {
+    svg.innerHTML = statePaths + bordersPath;
     section.classList.add('districts-map--pending');
     return;
   }
 
-  // Only served counties get their own path; everything else is the gray state fill underneath.
-  const counties = topojson.feature(us, us.objects.counties).features
-    .map((f) => ({ f, t: tally.get(countyKey(f.properties.name, stateNames.get(f.id.slice(0, 2)))) }))
-    .filter(({ t }) => t);
+  if (!usersByDistrict.size) tabs.find((t) => t.dataset.view === 'users')?.remove();
 
-  svg.innerHTML =
-    states.map((s) => `<path class="districts-map__state" d="${polygonPath(s.geometry)}" />`).join('') +
-    counties.map(({ f, t }, i) =>
-      `<path class="districts-map__county" data-i="${i}" data-bucket="${bucketOf(t.count)}" d="${polygonPath(f.geometry)}" />`).join('') +
-    `<path class="districts-map__borders" d="${stateBorders.coordinates.map(line).join('')}" />`;
+  let view = 'districts';
+  let shown = []; // [{ f, t }] for the counties drawn in the current view
 
-  const servedStates = new Set([...tally.values()].map((t) => t.state));
-  document.getElementById('map-summary').textContent =
-    `${tally.size.toLocaleString()} counties across ${servedStates.size} states`;
-  renderLegend();
+  const render = (next) => {
+    view = next;
+    const { buckets } = MAP_VIEWS[view];
+    const tally = tallies[view];
+    shown = allCounties.map(({ f, key }) => ({ f, t: tally.get(key) })).filter(({ t }) => t);
+
+    // Only counties with a value get their own path; everything else is the gray state fill underneath.
+    svg.innerHTML = statePaths +
+      shown.map(({ f, t }, i) =>
+        `<path class="districts-map__county" data-i="${i}" data-bucket="${bucketOf(t.count, buckets)}" d="${polygonPath(f.geometry)}" />`).join('') +
+      bordersPath;
+
+    if (view === 'districts') {
+      const states = new Set([...tally.values()].map((t) => t.state));
+      summary.textContent = `${plural(tally.size, ['county', 'counties'])} across ${states.size} states`;
+    } else {
+      const mapped = [...usersByDistrict.values()].reduce((a, n) => a + n, 0);
+      const total = mapped + (userData.unmapped?.users || 0);
+      summary.textContent = `${plural(total, ['user', 'users'])} across ${plural(usersByDistrict.size, ['district', 'districts'])}`;
+    }
+    renderLegend(view);
+    tabs.forEach((t) => t.setAttribute('aria-pressed', String(t.dataset.view === view)));
+    tooltip.hidden = true;
+  };
+
+  tabs.forEach((t) => t.addEventListener('click', () => render(t.dataset.view)));
+  render('districts');
 
   const countyAt = (target) => target.closest?.('.districts-map__county');
 
@@ -251,8 +303,10 @@ async function initMap(districts, focusList) {
       tooltip.hidden = true;
       return;
     }
-    const { t } = counties[el.dataset.i];
-    tooltip.innerHTML = `<strong>${escapeHtml(t.county)}, ${escapeHtml(t.state)}</strong>${t.count} district${t.count === 1 ? '' : 's'}`;
+    const { t } = shown[el.dataset.i];
+    const detail = view === 'users' ? `<span>${escapeHtml(t.districts.join(', '))}</span>` : '';
+    tooltip.innerHTML = `<strong>${escapeHtml(t.county)}, ${escapeHtml(t.state)}</strong>` +
+      plural(t.count, MAP_VIEWS[view].unit) + detail;
     const box = section.getBoundingClientRect();
     tooltip.style.left = `${e.clientX - box.left}px`;
     tooltip.style.top = `${e.clientY - box.top}px`;
@@ -263,17 +317,21 @@ async function initMap(districts, focusList) {
   svg.addEventListener('click', (e) => {
     const el = countyAt(e.target);
     if (!el) return;
-    const { t } = counties[el.dataset.i];
+    const { t } = shown[el.dataset.i];
     focusList(t.county, t.state);
   });
+}
+
+async function fetchJson(url) {
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`${url} ${resp.status}`);
+  return resp.json();
 }
 
 async function initDistricts() {
   let districts;
   try {
-    const resp = await fetch(DISTRICTS_URL);
-    if (!resp.ok) throw new Error(`districts ${resp.status}`);
-    districts = await resp.json();
+    districts = await fetchJson(DISTRICTS_URL);
   } catch (error) {
     console.error('Failed to load districts:', error);
     document.getElementById('district-list').innerHTML =
@@ -281,9 +339,15 @@ async function initDistricts() {
     return;
   }
 
+  // Optional: without it the map just has no Users view.
+  const userData = await fetchJson(USERS_URL).catch((error) => {
+    console.error('Failed to load user counts:', error);
+    return null;
+  });
+
   districts.sort((a, b) => a.name.localeCompare(b.name));
   const focusList = initDistrictList(districts);
-  initMap(districts, focusList);
+  initMap(districts, userData, focusList);
 }
 
 document.addEventListener('DOMContentLoaded', initDistricts);

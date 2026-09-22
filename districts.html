@@ -63,11 +63,14 @@
       <!-- County choropleth. Falls back to gray states + "coming soon" when districts.json has no locations. -->
       <section class="districts-map" aria-label="Map of supported districts by county">
         <div class="districts-map__header">
-          <h2 class="districts-map__heading">Where Gradiate works</h2>
+          <div class="map-tabs" role="group" aria-label="Map view">
+            <button type="button" class="map-tab" data-view="districts" aria-pressed="true">Where Gradiate works</button>
+            <button type="button" class="map-tab" data-view="users" aria-pressed="false">Users</button>
+          </div>
           <span class="districts-map__summary" id="map-summary"></span>
         </div>
         <svg class="districts-map__svg" id="districts-map" viewBox="0 0 975 610" role="img"
-          aria-label="Map of the United States shaded by how many supported districts serve each county."></svg>
+          aria-label="Map of the United States shaded by supported districts or Gradiate users in each county."></svg>
         <div class="districts-map__legend" id="map-legend"></div>
         <div class="districts-map__tooltip" id="map-tooltip" hidden></div>
         <div class="districts-map__overlay">

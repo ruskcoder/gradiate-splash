@@ -1,0 +1,41 @@
+{
+  "districts": [
+    {
+      "district": "Katy ISD",
+      "users": 1559,
+      "schools": ["Cinco Ranch HS", "Jordan HS", "Seven Lakes HS", "Adams Junior High", "Seven Lakes Junior High", "Tompkins HS", "Freeman HS", "Beck Junior High", "Taylor HS", "Beckendorff Junior High", "Cinco Ranch Junior High", "Stanley Elementary", "Kilpatrick Elementary", "Campbell Elementary", "Tays Junior High", "Davidson Elementary"]
+    },
+    { "district": "Conroe ISD", "users": 16, "schools": ["The Woodlands College Park High School", "Oak Ridge High School"] },
+    { "district": "Frisco ISD", "users": 9, "schools": ["Lawler Middle School", "Panther Creek High School", "Memorial High School"] },
+    { "district": "Cypress Fairbanks ISD", "users": 6, "schools": ["Cypress Ranch High School", "Cypress Ridge High School"] },
+    { "district": "Bentonville School District", "users": 4, "schools": ["Bentonville High School", "Bentonville West High School"] },
+    { "district": "St. Johns County SD", "users": 2, "schools": ["Beachside High School", "Tocoi Creek High School"] },
+    { "district": "Hood River County SD Live", "users": 2, "schools": ["Hood River Middle School", "Hood River Valley High School"] },
+    { "district": "Spring Branch ISD", "users": 1, "schools": ["Stratford HS"] },
+    { "district": "Suffolk Public Schools", "users": 1, "schools": ["Nansemond River HS"] },
+    { "district": "Carroll County Public Schools", "users": 1, "schools": ["Manchester Valley HS"] },
+    { "district": "Coppell ISD", "users": 1, "schools": ["Coppell HS"] },
+    { "district": "Los Fresnos Consolidated ISD", "users": 1, "schools": ["Los Fresnos United"] },
+    { "district": "Rogers School District", "users": 1, "schools": ["Heritage High School"] },
+    { "district": "Jonesboro School District", "users": 1, "schools": ["Annie Camp Jr High School"] },
+    { "district": "Stuttgart School District", "users": 1, "schools": ["Stuttgart High School"] },
+    { "district": "Greenbrier School District", "users": 1, "schools": ["Greenbrier Junior High"] },
+    { "district": "Mammoth Spring School District", "users": 1, "schools": ["Mammoth Spring High School"] },
+    { "district": "Dumas School District", "users": 1, "schools": ["Dumas High School"] },
+    { "district": "Centerpoint School District", "users": 1, "schools": ["Centerpoint High School"] },
+    { "district": "West Memphis School District", "users": 1, "schools": ["Wonder Junior High"] },
+    { "district": "Bryant School District", "users": 1, "schools": ["Bryant High School"] },
+    { "district": "Ozark School District", "users": 1, "schools": ["Ozark Upper Elementary School"] },
+    { "district": "Maynard School District", "users": 1, "schools": ["Maynard High School"] },
+    { "district": "Mulberry-Pleasant View Bi-County School District", "users": 1, "schools": ["Mulberry High School"] },
+    { "district": "Nashville School District", "users": 1, "schools": ["Nashville High School"] },
+    { "district": "LISA Academy", "users": 1, "schools": ["LISA Academy Rogers-Bentonville MS"] },
+    { "district": "Haas Hall Academy", "users": 1, "schools": ["Haas Hall Academy Bentonville"] },
+    { "district": "eSTEM Public Charter School", "users": 1, "schools": ["eStem High School"] },
+    { "district": "Lakeside (Garland County) School District", "users": 1, "schools": ["Lakeside Junior High"] }
+  ],
+  "unmapped": {
+    "users": 67,
+    "schools": ["Auburn High School", "Northridge Middle School", "Kennedy Middle School", "Parkland High School", "Flinn Middle School", "Pace High School", "Jefferson High School"]
+  }
+}
