@@ -38,15 +38,50 @@
 }
 
 /* ============================================
-   MAP (placeholder)
+   MAP
    ============================================ */
 
 .districts-map {
+  /* County shades, lightest (1 district) to darkest (10+) */
+  --map-1: #cfe6fb;
+  --map-2: #9cd0fb;
+  --map-3: #5aa7e6;
+  --map-4: #3380be;
+  --map-5: #1a4f7c;
+
   position: relative;
   background: var(--component-bg-secondary);
   border-radius: var(--border-radius-xl);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-2xl);
+}
+
+html.dark .districts-map {
+  /* Reversed on dark backgrounds so busier counties glow brighter */
+  --map-1: #1f4566;
+  --map-2: #1e659e;
+  --map-3: #3380be;
+  --map-4: #6fb3ee;
+  --map-5: #b9ddfc;
+}
+
+.districts-map__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-xs) var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.districts-map__heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+.districts-map__summary {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-tertiary);
 }
 
 .districts-map__svg {
@@ -57,13 +92,29 @@
 }
 
 .districts-map__state {
-  fill: var(--color-surface-quaternary);
-  transition: fill var(--transition-base);
+  fill: var(--component-bg-tertiary);
 }
 
-.districts-map__state:hover {
-  fill: var(--color-text-quaternary);
+.districts-map--pending .districts-map__state {
+  fill: var(--color-surface-quaternary);
 }
+
+.districts-map__county {
+  stroke: var(--component-bg-secondary);
+  stroke-width: 0.5;
+  cursor: pointer;
+  transition: opacity var(--transition-base);
+}
+
+.districts-map__county:hover {
+  opacity: 0.7;
+}
+
+.districts-map [data-bucket="1"] { fill: var(--map-1); background: var(--map-1); }
+.districts-map [data-bucket="2"] { fill: var(--map-2); background: var(--map-2); }
+.districts-map [data-bucket="3"] { fill: var(--map-3); background: var(--map-3); }
+.districts-map [data-bucket="4"] { fill: var(--map-4); background: var(--map-4); }
+.districts-map [data-bucket="5"] { fill: var(--map-5); background: var(--map-5); }
 
 .districts-map__borders {
   fill: none;
@@ -73,16 +124,77 @@
   pointer-events: none;
 }
 
+.districts-map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xs) var(--spacing-md);
+  margin-top: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.districts-map__legend:empty {
+  display: none;
+}
+
+.districts-map__legend-title {
+  font-weight: var(--font-weight-semibold);
+  margin-right: var(--spacing-xs);
+}
+
+.districts-map__legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.districts-map__swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 0.25rem;
+}
+
+.districts-map__tooltip {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, calc(-100% - 12px));
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  background: var(--background-page);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.districts-map__tooltip[hidden] {
+  display: none;
+}
+
+.districts-map__tooltip strong {
+  color: var(--text-color);
+}
+
+/* "Coming soon" only while districts.json has no location data */
 .districts-map__overlay {
   position: absolute;
   inset: 0;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-sm);
   text-align: center;
   pointer-events: none;
+}
+
+.districts-map--pending .districts-map__overlay {
+  display: flex;
 }
 
 .districts-map__badge {
@@ -100,14 +212,6 @@
 .districts-map__badge svg {
   width: 1.25em;
   height: 1.25em;
-}
-
-.districts-map__note {
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--border-radius-full);
-  background: var(--background-page);
-  color: var(--text-color-secondary);
-  font-size: var(--font-size-sm);
 }
 
 /* ============================================
@@ -196,6 +300,12 @@
   line-height: var(--line-height-tight);
 }
 
+.district-card__location {
+  margin-top: calc(-1 * var(--spacing-xs));
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
 .district-card__tags {
   display: flex;
   flex-wrap: wrap;
@@ -253,12 +363,16 @@
     padding: var(--spacing-sm);
   }
 
+  .districts-map__heading {
+    font-size: var(--font-size-base);
+  }
+
+  .districts-map__legend {
+    font-size: var(--font-size-xs);
+  }
+
   .districts-map__badge {
     font-size: var(--font-size-base);
     padding: var(--spacing-xs) var(--spacing-md);
-  }
-
-  .districts-map__note {
-    font-size: var(--font-size-xs);
   }
 }

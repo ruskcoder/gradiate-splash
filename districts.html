@@ -60,10 +60,16 @@
         </p>
       </header>
 
-      <!-- Choropleth placeholder: per-state data isn't available yet, so every state is drawn gray. -->
-      <section class="districts-map" aria-label="Map of districts by state">
+      <!-- County choropleth. Falls back to gray states + "coming soon" when districts.json has no locations. -->
+      <section class="districts-map" aria-label="Map of supported districts by county">
+        <div class="districts-map__header">
+          <h2 class="districts-map__heading">Where Gradiate works</h2>
+          <span class="districts-map__summary" id="map-summary"></span>
+        </div>
         <svg class="districts-map__svg" id="districts-map" viewBox="0 0 975 610" role="img"
-          aria-label="Map of the United States. District counts by state are coming soon."></svg>
+          aria-label="Map of the United States shaded by how many supported districts serve each county."></svg>
+        <div class="districts-map__legend" id="map-legend"></div>
+        <div class="districts-map__tooltip" id="map-tooltip" hidden></div>
         <div class="districts-map__overlay">
           <span class="districts-map__badge"><i data-lucide="map"></i> Coming soon</span>
         </div>
