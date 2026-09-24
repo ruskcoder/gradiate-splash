@@ -237,3 +237,7 @@
     transition: none;
   }
 }
+
+.stats-chart__error {
+  color: var(--text-color-secondary);
+}

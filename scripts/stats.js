@@ -91,7 +91,10 @@ async function initStats() {
     stats = await resp.json();
   } catch (error) {
     console.error('Failed to load user stats:', error);
-    section.hidden = true;
+    document.getElementById('user-count').textContent = '—';
+    document.getElementById('school-count').textContent = '—';
+    document.getElementById('school-chart').innerHTML =
+      `<p class="stats-chart__error">Couldn't load school stats right now.</p>`;
     return;
   }
 
