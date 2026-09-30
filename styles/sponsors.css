@@ -1,0 +1,129 @@
+/* ============================================
+   SPONSORS SECTION
+   ============================================ */
+
+.sponsors {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+  background-color: #f7efe6;
+}
+
+html.dark .sponsors {
+  background-color: #2a221b;
+}
+
+.sponsors__heading {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-color);
+}
+
+.sponsors__tier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.sponsors__tier-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sponsors__tier-label--bronze {
+  color: #8a5a2b;
+  background-color: #f3e3d3;
+}
+
+html.dark .sponsors__tier-label--bronze {
+  color: #e8b98a;
+  background-color: #3a2a1c;
+}
+
+.sponsors__list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+.sponsor-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--border-radius-lg);
+  background-color: var(--background-surface);
+  color: var(--text-color);
+}
+
+html.dark .sponsor-card {
+  border-color: var(--color-surface-tertiary);
+}
+
+.sponsor-card__logo {
+  width: 96px;
+  height: 84px;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-white);
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sponsor-card__text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.sponsor-card__name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.sponsor-card__description {
+  font-size: var(--font-size-sm);
+  color: var(--text-color-secondary);
+}
+
+.sponsor-card__url {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary-medium);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  width: fit-content;
+}
+
+.sponsor-card__url:hover {
+  color: var(--color-primary-dark);
+}
+
+.sponsor-card__url svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+@media (max-width: 600px) {
+  .sponsor-card {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .sponsor-card__logo {
+    width: 72px;
+    height: 64px;
+  }
+}
