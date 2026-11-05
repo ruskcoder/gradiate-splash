@@ -1,0 +1,17 @@
+// Gradiate splash site on Cloudflare: a static-assets-only Worker serving this
+// folder. Asset requests are free and unlimited and never run any code.
+{
+  "name": "gradiate-splash",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": ".",
+    // /districts.html is answered by /districts (and old .html links redirect there).
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  }
+  // After checking the workers.dev URL, serve the real hostnames from here:
+  // ,"routes": [
+  //   { "pattern": "gradiate.app", "custom_domain": true },
+  //   { "pattern": "www.gradiate.app", "custom_domain": true }
+  // ]
+}

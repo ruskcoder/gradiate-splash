@@ -1,0 +1,9 @@
+.git/
+.vscode/
+.assetsignore
+wrangler.jsonc
+README.md
+styles/OLDSTYLES.css
+.wrangler/
+.gitignore
+_headers

@@ -1,0 +1,10 @@
+# The web and mobile apps fetch these from other origins.
+/districts.json
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=300
+
+/district-users.json
+  Access-Control-Allow-Origin: *
+
+/images/*
+  Cache-Control: public, max-age=86400
