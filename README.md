@@ -15,4 +15,8 @@ This is the splash page hosted on [https://gradiate.com/](https://gradiate.com/)
    cd gradiate-app
    ```
 
-3. Open `src/index.html` in your web browser to view the splash page.
+3. Run `npx wrangler dev` and open the URL it prints (links like `/districts` need a server).
+
+## Deploying
+
+The site is a static-assets-only Cloudflare Worker (`wrangler.jsonc`): `npx wrangler deploy`. Files listed in `.assetsignore` are not published; `_headers` sets CORS on `districts.json` for the web and mobile apps.
